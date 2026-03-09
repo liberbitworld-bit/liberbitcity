@@ -879,10 +879,43 @@
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
   }
 
-  .unete-content { max-width: 680px; margin: 0 auto; }
+  .unete-content { max-width: 1100px; margin: 0 auto; }
   .unete-h2 { font-family: var(--ff-display); font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: var(--cream); line-height: 1.1; letter-spacing: -0.02em; }
   .unete-h2 em { font-style: italic; color: var(--gold); }
-  .unete-sub { margin-top: 1.5rem; font-size: 1rem; color: var(--stone); line-height: 1.7; }
+  .unete-sub { margin-top: 1.5rem; font-size: 1rem; color: var(--stone); line-height: 1.7; max-width: 680px; }
+  .unete-cols {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 1.5rem; align-items: center; margin-top: 2rem;
+  }
+  @media (max-width: 900px) { .unete-cols { grid-template-columns: 1fr; } }
+  .network-state-box {
+    background: rgba(201,168,76,0.07);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    padding: 2rem 1.8rem;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; gap: 1rem;
+    min-width: 220px;
+  }
+  .network-state-box .ns-icon { font-size: 2rem; }
+  .network-state-box .ns-title {
+    font-family: var(--ff-display); font-size: 1.1rem; font-weight: 700;
+    color: var(--cream); line-height: 1.2;
+  }
+  .network-state-box .ns-sub {
+    font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.12em;
+    color: rgba(201,168,76,0.6); text-transform: uppercase;
+  }
+  .btn-network-state {
+    display: inline-block;
+    background: var(--gold); color: var(--cream);
+    padding: 0.85rem 1.5rem; border-radius: 3px;
+    font-weight: 700; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase;
+    text-decoration: none; transition: all 0.25s; font-family: var(--ff-body);
+    white-space: nowrap;
+  }
+  .btn-network-state:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
 
   .unete-form {
     margin-top: 3rem;
@@ -1489,7 +1522,8 @@
     <div class="unete-content reveal">
       <h2 class="unete-h2">Sé parte de la <em>historia.</em></h2>
       <p class="unete-sub">Los primeros en llegar son los cofundadores. Registra tu interés y te contactaremos con información sobre acceso anticipado a parcelas, programas de residencia pionera y oportunidades de inversión.</p>
-      <div class="unete-form">
+      <div class="unete-cols">
+        <div class="unete-form">
         <div class="form-tabs">
           <button class="form-tab active" onclick="setTab(this,'pionero')">Soy Pionero</button>
           <button class="form-tab" onclick="setTab(this,'inversor')">Soy Inversor</button>
@@ -1535,7 +1569,17 @@
           </div>
         </div>
         <button class="form-submit" onclick="handleSubmit(this)">Registrar mi interés →</button>
-      </div>
+        </div><!-- cierre unete-form -->
+
+        <!-- Recuadro Network State -->
+        <div class="network-state-box">
+          <div class="ns-icon">🌐</div>
+          <div class="ns-title">¿Ya tienes<br>identidad digital?</div>
+          <div class="ns-sub">LiberBit World · Network State</div>
+          <a href="https://liberbitworld.org" target="_blank" class="btn-network-state">Registrarme en el<br>Network State →</a>
+        </div>
+
+      </div><!-- cierre unete-cols -->
     </div>
   </div>
 </section>
@@ -1757,8 +1801,85 @@
 
   // Form submit
   // ─── GOOGLE SHEETS INTEGRATION ───
-  // Pega aquí la URL de tu Google Apps Script desplegado
   const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby7K2F0thSqoHlqHHtWg6qh8vS95RyAdXkD1jELhu3PZpPzlkb-PBIWPL4jlx6H03-XGw/exec';
+
+  // ─── NOSTR BOT ───
+  const BOT_NSEC = 'nsec1zgd66zk2c3d90u5wc54f7rtqc9k3n9fnzt77snqwhkxzgnzn204qrusp9w';
+  const RELAY_URL = 'wss://relay.liberbitworld.org';
+
+  // Nostr crypto helpers (sin dependencias externas)
+  async function nsecToPrivkey(nsec) {
+    const ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
+    const decoded = [];
+    for (const c of nsec.toLowerCase()) {
+      const idx = ALPHABET.indexOf(c);
+      if (idx !== -1) decoded.push(idx);
+    }
+    // bech32 decode → bytes
+    let bits = 0, value = 0;
+    const bytes = [];
+    for (let i = 6; i < decoded.length - 6; i++) {
+      value = (value << 5) | decoded[i];
+      bits += 5;
+      if (bits >= 8) { bits -= 8; bytes.push((value >> bits) & 0xff); }
+    }
+    return bytes.slice(0, 32);
+  }
+
+  async function sha256(data) {
+    const buf = typeof data === 'string' ? new TextEncoder().encode(data) : data;
+    return new Uint8Array(await crypto.subtle.digest('SHA-256', buf));
+  }
+
+  async function signNostrEvent(privkeyBytes, event) {
+    // Import key for ECDSA P-256... Nostr uses secp256k1 — usamos noble/secp via CDN
+    // Se carga dinámicamente solo cuando se necesita
+    if (!window._nobleSecp) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://unpkg.com/@noble/secp256k1@1.7.1/lib/index.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+      window._nobleSecp = window.nobleSecp256k1 || window.secp256k1;
+    }
+    const secp = window._nobleSecp;
+    const privBytes = new Uint8Array(privkeyBytes);
+    const pubBytes = secp.getPublicKey(privBytes, true);
+    const pubkeyHex = Array.from(pubBytes.slice(1)).map(b => b.toString(16).padStart(2,'0')).join('');
+
+    event.pubkey = pubkeyHex;
+    event.id = await getEventId(event);
+    const sigBytes = await secp.sign(event.id, privBytes, { canonical: true, der: false });
+    event.sig = Array.from(sigBytes).map(b => b.toString(16).padStart(2,'0')).join('');
+    return event;
+  }
+
+  async function getEventId(event) {
+    const str = JSON.stringify([0, event.pubkey, event.created_at, event.kind, event.tags, event.content]);
+    const hash = await sha256(str);
+    return Array.from(hash).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  async function publishToNostr(message) {
+    try {
+      const privkeyBytes = await nsecToPrivkey(BOT_NSEC);
+      let event = {
+        kind: 1,
+        created_at: Math.floor(Date.now() / 1000),
+        tags: [['t', 'liberbit'], ['t', 'lbw'], ['client', 'LiberBit City Bot']],
+        content: message
+      };
+      event = await signNostrEvent(privkeyBytes, event);
+      const ws = new WebSocket(RELAY_URL);
+      ws.onopen = () => {
+        ws.send(JSON.stringify(['EVENT', event]));
+        setTimeout(() => ws.close(), 3000);
+      };
+    } catch(e) {
+      console.warn('Nostr bot error:', e);
+    }
+  }
 
   function handleSubmit(btn) {
     const nombre = document.getElementById('f-nombre').value.trim();
@@ -1777,26 +1898,27 @@
 
     const payload = { nombre, email, pais, perfil, tipo, fecha: new Date().toLocaleString('es-ES') };
 
+    // 1. Google Sheets
     fetch(SHEETS_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
-    })
-    .then(() => {
+    });
+
+    // 2. Nostr community chat
+    const msg = `🏙️ Nuevo registro en LiberBit City\n👤 ${nombre} · ${pais}\n🎯 ${tipo} · ${perfil}\n\n¡Bienvenido/a a la red! liberbitcity.org`;
+    publishToNostr(msg);
+
+    // 3. UI feedback
+    setTimeout(() => {
       btn.textContent = '✓ Registrado — te contactaremos pronto';
       btn.style.background = '#2A3240';
       btn.style.color = '#C9A84C';
-      // Limpiar campos
       document.getElementById('f-nombre').value = '';
       document.getElementById('f-email').value = '';
       document.getElementById('f-pais').value = '';
-    })
-    .catch(() => {
-      btn.textContent = '✓ Registrado — te contactaremos pronto';
-      btn.style.background = '#2A3240';
-      btn.style.color = '#C9A84C';
-    });
+    }, 800);
   }
 
   // SVG connections for world nodes (decorative)
