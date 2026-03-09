@@ -1807,77 +1807,47 @@
   const BOT_NSEC = 'nsec1zgd66zk2c3d90u5wc54f7rtqc9k3n9fnzt77snqwhkxzgnzn204qrusp9w';
   const RELAY_URL = 'wss://relay.liberbitworld.org';
 
-  // Nostr crypto helpers (sin dependencias externas)
-  async function nsecToPrivkey(nsec) {
-    const ALPHABET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
-    const decoded = [];
-    for (const c of nsec.toLowerCase()) {
-      const idx = ALPHABET.indexOf(c);
-      if (idx !== -1) decoded.push(idx);
-    }
-    // bech32 decode → bytes
-    let bits = 0, value = 0;
-    const bytes = [];
-    for (let i = 6; i < decoded.length - 6; i++) {
-      value = (value << 5) | decoded[i];
-      bits += 5;
-      if (bits >= 8) { bits -= 8; bytes.push((value >> bits) & 0xff); }
-    }
-    return bytes.slice(0, 32);
-  }
-
-  async function sha256(data) {
-    const buf = typeof data === 'string' ? new TextEncoder().encode(data) : data;
-    return new Uint8Array(await crypto.subtle.digest('SHA-256', buf));
-  }
-
-  async function signNostrEvent(privkeyBytes, event) {
-    // Import key for ECDSA P-256... Nostr uses secp256k1 — usamos noble/secp via CDN
-    // Se carga dinámicamente solo cuando se necesita
-    if (!window._nobleSecp) {
-      await new Promise((res, rej) => {
-        const s = document.createElement('script');
-        s.src = 'https://unpkg.com/@noble/secp256k1@1.7.1/lib/index.js';
-        s.onload = res; s.onerror = rej;
-        document.head.appendChild(s);
-      });
-      window._nobleSecp = window.nobleSecp256k1 || window.secp256k1;
-    }
-    const secp = window._nobleSecp;
-    const privBytes = new Uint8Array(privkeyBytes);
-    const pubBytes = secp.getPublicKey(privBytes, true);
-    const pubkeyHex = Array.from(pubBytes.slice(1)).map(b => b.toString(16).padStart(2,'0')).join('');
-
-    event.pubkey = pubkeyHex;
-    event.id = await getEventId(event);
-    const sigBytes = await secp.sign(event.id, privBytes, { canonical: true, der: false });
-    event.sig = Array.from(sigBytes).map(b => b.toString(16).padStart(2,'0')).join('');
-    return event;
-  }
-
-  async function getEventId(event) {
-    const str = JSON.stringify([0, event.pubkey, event.created_at, event.kind, event.tags, event.content]);
-    const hash = await sha256(str);
-    return Array.from(hash).map(b => b.toString(16).padStart(2,'0')).join('');
+  function loadNostrTools() {
+    return new Promise((resolve, reject) => {
+      if (window.NostrTools) return resolve(window.NostrTools);
+      const s = document.createElement('script');
+      s.src = 'https://unpkg.com/nostr-tools@2.7.2/lib/nostr.bundle.js';
+      s.onload = () => {
+        if (window.NostrTools) resolve(window.NostrTools);
+        else reject(new Error('NostrTools no disponible tras carga'));
+      };
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
   }
 
   async function publishToNostr(message) {
     try {
-      const privkeyBytes = await nsecToPrivkey(BOT_NSEC);
-      let event = {
+      const nt = await loadNostrTools();
+
+      // Decodificar nsec → bytes (igual que la app)
+      const privkeyBytes = nt.nip19.decode(BOT_NSEC).data;
+      const pubkey = nt.getPublicKey(privkeyBytes);
+
+      // Construir y firmar evento (finalizeEvent = lo que usa la app)
+      const event = nt.finalizeEvent({
         kind: 1,
         created_at: Math.floor(Date.now() / 1000),
         tags: [['t', 'liberbit'], ['t', 'lbw'], ['client', 'LiberBit City Bot']],
-        content: message
-      };
-      event = await signNostrEvent(privkeyBytes, event);
-      const ws = new WebSocket(RELAY_URL);
-      ws.onopen = () => {
-        ws.send(JSON.stringify(['EVENT', event]));
-        setTimeout(() => ws.close(), 3000);
-      };
+        content: message,
+        pubkey
+      }, privkeyBytes);
+
+      console.log('[Bot] Evento firmado:', event.id, '→ publicando en', RELAY_URL);
+
+      // Publicar via SimplePool (igual que la app)
+      const pool = new nt.SimplePool();
+      await Promise.allSettled(pool.publish([RELAY_URL], event));
+      console.log('[Bot] ✅ Publicado en relay');
+      pool.close([RELAY_URL]);
+
     } catch(e) {
-      console.warn('Nostr bot error:', e);
+      console.warn('[Bot] Error Nostr:', e);
     }
   }
 
@@ -1886,7 +1856,7 @@
     const email  = document.getElementById('f-email').value.trim();
     const pais   = document.getElementById('f-pais').value;
     const perfil = document.getElementById('f-perfil').value;
-    const tipo   = document.querySelector('.form-tab.active')?.textContent || '';
+    const tipo   = document.querySelector('.form-tab.active')?.textContent?.trim() || '';
 
     if (!nombre || !email) {
       alert('Por favor rellena al menos el nombre y el email.');
