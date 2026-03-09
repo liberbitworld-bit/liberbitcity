@@ -973,24 +973,34 @@
 
   /* ─── FOOTER ─── */
   footer {
-    background: var(--ink-light);
-    padding: 3rem;
+    background: var(--ink);
+    padding: 4rem 3rem 2.5rem;
     border-top: 1px solid rgba(201,168,76,0.15);
   }
-  .footer-inner {
+  .footer-grid {
     max-width: 1200px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: space-between; flex-wrap: gap;
+    display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 3rem; padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(201,168,76,0.12);
   }
-  .footer-logo { font-family: var(--ff-display); font-size: 1.1rem; font-weight: 700; color: var(--cream); }
-  .footer-logo span { color: var(--gold); }
-  .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
-  .footer-links a { font-size: 0.8rem; color: var(--stone); text-decoration: none; transition: color 0.2s; }
-  .footer-links a:hover { color: var(--gold); }
-  .footer-world {
-    font-family: var(--ff-mono); font-size: 0.65rem; color: rgba(201,168,76,0.5);
-    display: flex; align-items: center; gap: 0.5rem;
+  .footer-brand-name { font-family: var(--ff-display); font-size: 1.3rem; font-weight: 700; color: var(--cream); }
+  .footer-brand-name span { color: var(--gold); }
+  .footer-brand-sub { font-family: var(--ff-mono); font-size: 0.6rem; color: rgba(201,168,76,0.5); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.4rem; }
+  .footer-brand-desc { font-size: 0.82rem; color: var(--stone); line-height: 1.65; margin-top: 1rem; font-weight: 300; max-width: 220px; }
+  .footer-col-title { font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.2rem; }
+  .footer-col-links { display: flex; flex-direction: column; gap: 0.65rem; }
+  .footer-col-links a {
+    font-size: 0.82rem; color: var(--stone); text-decoration: none;
+    transition: color 0.2s; display: flex; align-items: center; gap: 0.5rem;
   }
-  .footer-world a { color: var(--gold); text-decoration: none; }
+  .footer-col-links a:hover { color: var(--gold); }
+  .footer-col-links a .link-icon { font-size: 0.9rem; width: 16px; }
+  .footer-bottom {
+    max-width: 1200px; margin: 2rem auto 0;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-copy { font-family: var(--ff-mono); font-size: 0.6rem; color: rgba(201,168,76,0.3); letter-spacing: 0.1em; }
+  .footer-tagline { font-family: var(--ff-mono); font-size: 0.6rem; color: rgba(201,168,76,0.3); letter-spacing: 0.1em; font-style: italic; }
 
   /* ─── RESPONSIVE ─── */
   @media (max-width: 900px) {
@@ -1012,7 +1022,8 @@
     .form-row { grid-template-columns: 1fr; }
     .tokenizacion-strip { grid-template-columns: 1fr; }
     .tok-features { grid-template-columns: repeat(2, 1fr); }
-    .footer-inner { flex-direction: column; gap: 1.5rem; text-align: center; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .footer-bottom { flex-direction: column; text-align: center; gap: 0.5rem; }
   }
   @media (max-width: 600px) {
     .hero-h1 { font-size: 2.5rem; }
@@ -1075,7 +1086,6 @@
     <li><a href="#sintropía">Fundamentos</a></li>
     <li><a href="#ecosistema">Ecosistema</a></li>
     <li><a href="#modelo">Modelo</a></li>
-    <li><a href="#roadmap">Hoja de Ruta</a></li>
     <li><a href="#red">Red Global</a></li>
     <li><a href="#principios">Principios</a></li>
   </ul>
@@ -1409,55 +1419,6 @@
   </div>
 </section>
 
-<!-- ─── ROADMAP ─── -->
-<section id="roadmap">
-  <div class="container">
-    <div class="section-eyebrow reveal" style="color:rgba(201,168,76,0.7)">Hoja de Ruta</div>
-    <h2 class="section-h2 light reveal reveal-d1">
-      De comunidad fundadora<br>
-      <em>a capital de LiberBit World.</em>
-    </h2>
-    <div class="roadmap-line">
-      <div class="roadmap-phase reveal">
-        <div class="roadmap-num">01</div>
-        <div class="roadmap-content">
-          <span class="roadmap-phase-label">Fase 1 · En curso</span>
-          <div class="roadmap-phase-title">Comunidad Fundadora</div>
-          <div class="roadmap-phase-text">Cohesión de la visión y base operativa. Selección del municipio, empadronamiento coordinado del grupo fundador, creación del IberHub como espacio multifuncional y primeras viviendas iniciales.</div>
-          <span class="roadmap-hab">⬡ 50 habitantes</span>
-        </div>
-      </div>
-      <div class="roadmap-phase reveal reveal-d1">
-        <div class="roadmap-num">02</div>
-        <div class="roadmap-content">
-          <span class="roadmap-phase-label">Fase 2 · Proyectada</span>
-          <div class="roadmap-phase-title">Núcleo Urbano Activo</div>
-          <div class="roadmap-phase-text">Acceso democrático al gobierno municipal. Primeros motores económicos (negocios, cooperativas) y servicios esenciales. Adquisición y recalificación del terreno base de 50–200 hectáreas.</div>
-          <span class="roadmap-hab">⬡ 300 habitantes</span>
-        </div>
-      </div>
-      <div class="roadmap-phase reveal reveal-d2 dimmed">
-        <div class="roadmap-num">03</div>
-        <div class="roadmap-content">
-          <span class="roadmap-phase-label">Fase 3 · Visión</span>
-          <div class="roadmap-phase-title">Ciudad Funcional</div>
-          <div class="roadmap-phase-text">Economía interna consolidada, distrito productivo y atracción masiva mediante vivienda asequible. Hasta 2.000–4.000 viviendas. Infraestructura energética solar distribuida y autonomía tecnológica.</div>
-          <span class="roadmap-hab">⬡ 1.000 habitantes</span>
-        </div>
-      </div>
-      <div class="roadmap-phase reveal reveal-d3 dimmed">
-        <div class="roadmap-num">04</div>
-        <div class="roadmap-content">
-          <span class="roadmap-phase-label">Fase 4 · Visión</span>
-          <div class="roadmap-phase-title">Polo Regional y Ciudad Completa</div>
-          <div class="roadmap-phase-text">Atracción de pymes, distrito Bitcoin, parque tecnológico y más de 300 empresas locales. Autosuficiencia energética total. Referente global y catalizador para nuevas ciudades en la red LBTC.</div>
-          <span class="roadmap-hab">⬡ 2.500 — 10.000 habitantes</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- ─── RED GLOBAL ─── -->
 <section id="red">
   <div class="container">
@@ -1712,20 +1673,53 @@
 
 <!-- ─── FOOTER ─── -->
 <footer>
-  <div class="footer-inner">
-    <div class="footer-logo">LiberBit <span>City</span></div>
-    <div class="footer-links">
-      <a href="#concepto">El Concepto</a>
-      <a href="#ecosistema">Ecosistema</a>
-      <a href="#modelo">Modelo</a>
-      <a href="#roadmap">Hoja de Ruta</a>
-      <a href="#red">Red Global</a>
-      <a href="#principios">Principios</a>
-      <a href="#unete">Únete</a>
+  <div class="footer-grid">
+
+    <!-- Marca -->
+    <div>
+      <div class="footer-brand-name">LiberBit <span>City</span></div>
+      <div class="footer-brand-sub">Red Mundial de Ciudades Libres</div>
+      <p class="footer-brand-desc">La primera red de comunidades físicas privadas gobernadas por sus miembros, con economía Bitcoin y sin diseño central.</p>
     </div>
-    <div class="footer-world">
-      ⬡ Capa digital: <a href="https://liberbitworld.org" target="_blank">liberbitworld.org</a>
+
+    <!-- Ecosistema LiberBit -->
+    <div>
+      <div class="footer-col-title">Ecosistema</div>
+      <div class="footer-col-links">
+        <a href="https://liberbitworld.org" target="_blank"><span class="link-icon">🌐</span>liberbitworld.org</a>
+        <a href="https://liberbitworld.com" target="_blank"><span class="link-icon">🌐</span>liberbitworld.com</a>
+        <a href="liberatlas.html"><span class="link-icon">⬡</span>LiberAtlas · LBTC-1</a>
+        <a href="citybunker.html"><span class="link-icon">⬡</span>CityBunker · LBTC-2</a>
+      </div>
     </div>
+
+    <!-- Navegación -->
+    <div>
+      <div class="footer-col-title">Navegación</div>
+      <div class="footer-col-links">
+        <a href="#concepto">El Concepto</a>
+        <a href="#ecosistema">Ecosistema</a>
+        <a href="#modelo">Modelo</a>
+        <a href="#red">Red Global</a>
+        <a href="#principios">Principios</a>
+        <a href="#unete">Únete</a>
+      </div>
+    </div>
+
+    <!-- Contacto y redes -->
+    <div>
+      <div class="footer-col-title">Contacto</div>
+      <div class="footer-col-links">
+        <a href="mailto:liberbitworld@gmail.com"><span class="link-icon">✉</span>liberbitworld@gmail.com</a>
+        <a href="https://t.me/liberbitworld" target="_blank"><span class="link-icon">✈</span>Telegram</a>
+        <a href="https://x.com/liberbitworld" target="_blank"><span class="link-icon">𝕏</span>@liberbitworld</a>
+      </div>
+    </div>
+
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 LiberBit City · Todos los derechos reservados</div>
+    <div class="footer-tagline">El orden no se impone. Emerge.</div>
   </div>
 </footer>
 
