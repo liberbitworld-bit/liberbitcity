@@ -40,6 +40,24 @@
     cursor: default;
   }
 
+  /* ─── CANVAS BACKGROUND ─── */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 55% at 10% 85%, rgba(30,90,160,0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 55% 45% at 88% 12%, rgba(201,168,76,0.08) 0%, transparent 50%);
+  }
+
   /* ─── SCROLLBAR ─── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: var(--cream-dark); }
@@ -65,21 +83,12 @@
     text-decoration: none;
   }
   .nav-logo-mark {
-    width: 36px; height: 36px;
-    background: var(--ink);
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    position: relative; overflow: hidden;
+    width: 44px; height: 44px;
+    flex-shrink: 0;
   }
-  .nav-logo-mark::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, var(--gold) 0%, transparent 60%);
-    opacity: 0.4;
-  }
-  .nav-logo-mark svg { width: 20px; height: 20px; fill: var(--gold); position: relative; z-index: 1; }
-  .nav-logo-text { font-family: var(--ff-display); font-size: 1.1rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
-  .nav-logo-sub { font-family: var(--ff-mono); font-size: 0.6rem; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-top: -2px; }
+  .nav-logo-mark svg { width: 44px; height: 44px; }
+  .nav-logo-text { font-family: var(--ff-display); font-size: 1.1rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; line-height: 1.1; }
+  .nav-logo-city { font-family: var(--ff-mono); font-size: 0.62rem; color: var(--slate); letter-spacing: 0.28em; text-transform: uppercase; display: block; margin-top: 1px; }
   .nav-links { display: flex; gap: 2rem; list-style: none; }
   .nav-links a { text-decoration: none; color: var(--ink-mid); font-size: 0.82rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; }
   .nav-links a:hover { color: var(--gold); }
@@ -95,8 +104,9 @@
   /* ─── HERO ─── */
   #hero {
     min-height: 100vh;
-    background: var(--ink);
+    background: transparent;
     position: relative;
+    z-index: 1;
     display: flex; align-items: center;
     overflow: hidden;
   }
@@ -155,7 +165,7 @@
   .hero-h1 {
     font-family: var(--ff-display); font-weight: 900;
     font-size: clamp(3rem, 7vw, 6.5rem); line-height: 1.0;
-    color: var(--cream); letter-spacing: -0.02em;
+    color: var(--ink); letter-spacing: -0.02em;
     max-width: 800px;
     opacity: 0; animation: fadeUp 0.9s 0.5s forwards;
   }
@@ -163,7 +173,7 @@
 
   .hero-sub {
     margin-top: 2rem;
-    font-size: 1.15rem; color: var(--stone); font-weight: 300; line-height: 1.7;
+    font-size: 1.15rem; color: var(--ink-mid); font-weight: 300; line-height: 1.7;
     max-width: 520px;
     opacity: 0; animation: fadeUp 0.9s 0.7s forwards;
   }
@@ -181,11 +191,11 @@
   }
   .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
   .btn-ghost {
-    background: transparent; color: var(--cream);
+    background: transparent; color: var(--ink);
     padding: 0.9rem 2.2rem; border-radius: 3px;
     font-weight: 500; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase;
     text-decoration: none; transition: all 0.25s;
-    border: 1px solid rgba(245,240,232,0.25);
+    border: 1px solid rgba(26,22,17,0.25);
   }
   .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
 
@@ -201,12 +211,108 @@
     margin-bottom: 0.3rem;
   }
   .hero-stat-val {
-    font-family: var(--ff-display); font-size: 2.2rem; font-weight: 700; color: var(--cream); line-height: 1;
+    font-family: var(--ff-display); font-size: 2.2rem; font-weight: 700; color: var(--ink); line-height: 1;
   }
   .hero-stat-val span { font-size: 1rem; color: var(--gold); }
 
-  /* ─── SECTION COMMONS ─── */
-  section { padding: 7rem 3rem; }
+  /* ─── CITY COUNTERS ─── */
+  .city-counters {
+    display: flex; gap: 0.75rem; flex-wrap: wrap;
+    margin-top: 1.8rem;
+    margin-bottom: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(201,168,76,0.15);
+    opacity: 0; animation: fadeUp 0.9s 0.85s forwards;
+  }
+  .city-counter-btn {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 0.7rem 1.4rem;
+    border-radius: 6px;
+    border: 1px solid rgba(201,168,76,0.35);
+    background: rgba(245,240,232,0.7);
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+    min-width: 130px;
+    position: relative;
+    overflow: hidden;
+  }
+  .city-counter-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.08), transparent);
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .city-counter-btn:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(201,168,76,0.2); transform: translateY(-2px); }
+  .city-counter-btn:hover::before { opacity: 1; }
+  .city-counter-btn.active-btn { border-color: rgba(30,160,80,0.5); background: rgba(30,160,80,0.06); }
+  .city-counter-btn.active-btn:hover { border-color: rgba(30,160,80,0.8); box-shadow: 0 4px 20px rgba(30,160,80,0.15); }
+  .city-counter-num {
+    font-family: var(--ff-display); font-size: 2rem; font-weight: 900;
+    color: var(--ink); line-height: 1;
+  }
+  .city-counter-btn.active-btn .city-counter-num { color: #1A7A40; }
+  .city-counter-label {
+    font-family: var(--ff-mono); font-size: 0.58rem;
+    color: var(--ink-mid); letter-spacing: 0.12em; text-transform: uppercase;
+    margin-top: 0.3rem; text-align: center;
+  }
+  .city-counter-btn.dev-btn .city-counter-num { color: var(--gold-dark); }
+  .city-counter-chevron {
+    font-size: 0.6rem; color: var(--gold); margin-top: 0.25rem;
+    transition: transform 0.3s;
+  }
+  .city-counter-btn.open .city-counter-chevron { transform: rotate(180deg); }
+
+  /* ─── CITIES PANEL ─── */
+  .cities-panel {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s;
+    opacity: 0; margin-bottom: 0;
+  }
+  .cities-panel.open {
+    max-height: 400px; opacity: 1; margin-bottom: 2rem;
+  }
+  .cities-panel-inner {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+    padding: 1.25rem 0 0.5rem;
+  }
+  @media (max-width: 600px) { .cities-panel-inner { grid-template-columns: 1fr; } }
+  .city-card {
+    background: rgba(245,240,232,0.85);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 8px; padding: 1.1rem 1.3rem;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s;
+  }
+  .city-card:hover { border-color: var(--gold); box-shadow: 0 4px 16px rgba(201,168,76,0.15); }
+  .city-card-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.6rem; }
+  .city-card-badge {
+    font-family: var(--ff-mono); font-size: 0.55rem; letter-spacing: 0.1em;
+    padding: 0.2rem 0.5rem; border-radius: 3px; text-transform: uppercase;
+    background: rgba(201,168,76,0.15); color: var(--gold-dark); border: 1px solid rgba(201,168,76,0.3);
+  }
+  .city-card-name {
+    font-family: var(--ff-display); font-size: 1.15rem; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em;
+  }
+  .city-card-loc {
+    font-family: var(--ff-mono); font-size: 0.6rem; color: var(--stone-dark);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .city-card-desc {
+    font-size: 0.82rem; color: var(--ink-mid); line-height: 1.55; font-weight: 300;
+  }
+  .city-card-link {
+    display: inline-block; margin-top: 0.7rem;
+    font-family: var(--ff-mono); font-size: 0.6rem; letter-spacing: 0.1em;
+    color: var(--gold); text-decoration: none; text-transform: uppercase;
+    border-bottom: 1px solid rgba(201,168,76,0.3); padding-bottom: 1px;
+    transition: border-color 0.2s;
+  }
+  .city-card-link:hover { border-color: var(--gold); }
+  section { padding: 7rem 3rem; position: relative; z-index: 1; }
   .container { max-width: 1200px; margin: 0 auto; }
 
   .section-eyebrow {
@@ -903,16 +1009,51 @@
 </style>
 </head>
 <body>
+<canvas id="bg-canvas"></canvas>
+<div class="bg-overlay"></div>
 
 <!-- ─── NAV ─── -->
 <nav id="navbar">
   <a href="#" class="nav-logo">
     <div class="nav-logo-mark">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <!-- Logo LiberBit City: círculo borde dorado, fondo teal, red de nodos, L dorada -->
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Borde dorado -->
+        <circle cx="50" cy="50" r="48" fill="#C9A84C"/>
+        <!-- Fondo teal oscuro interior -->
+        <circle cx="50" cy="50" r="41" fill="#1A3A42"/>
+        <!-- Globe lines – meridianos y paralelos tenues -->
+        <ellipse cx="50" cy="50" rx="28" ry="38" stroke="#2C6B7A" stroke-width="0.9" fill="none" opacity="0.7"/>
+        <ellipse cx="50" cy="50" rx="38" ry="28" stroke="#2C6B7A" stroke-width="0.9" fill="none" opacity="0.7"/>
+        <circle cx="50" cy="50" r="34" stroke="#2C6B7A" stroke-width="0.7" fill="none" opacity="0.5"/>
+        <!-- Nodos de la red -->
+        <circle cx="50" cy="20" r="2.5" fill="#4A9BAD" opacity="0.9"/>
+        <circle cx="72" cy="32" r="2.5" fill="#4A9BAD" opacity="0.9"/>
+        <circle cx="76" cy="58" r="2.5" fill="#4A9BAD" opacity="0.9"/>
+        <circle cx="62" cy="76" r="2.5" fill="#4A9BAD" opacity="0.9"/>
+        <circle cx="38" cy="78" r="2.5" fill="#4A9BAD" opacity="0.9"/>
+        <circle cx="24" cy="62" r="2.5" fill="#4A9BAD" opacity="0.9"/>
+        <circle cx="24" cy="38" r="2.5" fill="#4A9BAD" opacity="0.9"/>
+        <circle cx="50" cy="50" r="2" fill="#4A9BAD" opacity="0.6"/>
+        <!-- Líneas conectoras entre nodos -->
+        <line x1="50" y1="20" x2="72" y2="32" stroke="#4A9BAD" stroke-width="0.8" opacity="0.5"/>
+        <line x1="72" y1="32" x2="76" y2="58" stroke="#4A9BAD" stroke-width="0.8" opacity="0.5"/>
+        <line x1="76" y1="58" x2="62" y2="76" stroke="#4A9BAD" stroke-width="0.8" opacity="0.5"/>
+        <line x1="62" y1="76" x2="38" y2="78" stroke="#4A9BAD" stroke-width="0.8" opacity="0.5"/>
+        <line x1="38" y1="78" x2="24" y2="62" stroke="#4A9BAD" stroke-width="0.8" opacity="0.5"/>
+        <line x1="24" y1="62" x2="24" y2="38" stroke="#4A9BAD" stroke-width="0.8" opacity="0.5"/>
+        <line x1="24" y1="38" x2="50" y2="20" stroke="#4A9BAD" stroke-width="0.8" opacity="0.5"/>
+        <line x1="50" y1="20" x2="50" y2="50" stroke="#4A9BAD" stroke-width="0.6" opacity="0.4"/>
+        <line x1="72" y1="32" x2="50" y2="50" stroke="#4A9BAD" stroke-width="0.6" opacity="0.4"/>
+        <line x1="76" y1="58" x2="50" y2="50" stroke="#4A9BAD" stroke-width="0.6" opacity="0.4"/>
+        <line x1="24" y1="38" x2="50" y2="50" stroke="#4A9BAD" stroke-width="0.6" opacity="0.4"/>
+        <!-- L dorada -->
+        <text x="34" y="68" font-family="Georgia, serif" font-size="36" font-weight="700" fill="#C9A84C" font-style="italic">L</text>
+      </svg>
     </div>
     <div>
-      <span class="nav-logo-text">LiberBit City</span>
-      <span class="nav-logo-sub">liberbitcity.com</span>
+      <span class="nav-logo-text">LiberBit</span>
+      <span class="nav-logo-city">City</span>
     </div>
   </a>
   <ul class="nav-links">
@@ -962,82 +1103,63 @@
       <a href="#unete" class="btn-primary">Quiero ser Pionero</a>
       <a href="#concepto" class="btn-ghost">Conocer el modelo →</a>
     </div>
+
+    <!-- ─── CITY COUNTERS ─── -->
+    <div class="city-counters">
+      <button class="city-counter-btn dev-btn" id="btnDev" onclick="toggleCities()">
+        <span class="city-counter-num">2</span>
+        <span class="city-counter-label">City's en Desarrollo</span>
+        <span class="city-counter-chevron">▼</span>
+      </button>
+      <button class="city-counter-btn active-btn" id="btnActive">
+        <span class="city-counter-num">0</span>
+        <span class="city-counter-label">City's Activas</span>
+      </button>
+    </div>
+
+    <!-- ─── CITIES PANEL ─── -->
+    <div class="cities-panel" id="citiesPanel">
+      <div class="cities-panel-inner">
+        <div class="city-card">
+          <div class="city-card-header">
+            <span class="city-card-badge">En Desarrollo</span>
+          </div>
+          <div class="city-card-name">LiberAtlas</div>
+          <div class="city-card-loc">📍 Península Ibérica · LBTC-1</div>
+          <div class="city-card-desc">
+            Ciudad fundacional de la red. Comunidad física privada gobernada por sus miembros, con economía 100% Bitcoin y estructura de autogobierno emergente.
+          </div>
+          <a href="#unete" class="city-card-link">Conocer más →</a>
+        </div>
+        <div class="city-card">
+          <div class="city-card-header">
+            <span class="city-card-badge">En Desarrollo</span>
+          </div>
+          <div class="city-card-name">CityBunker</div>
+          <div class="city-card-loc">📍 Ubicación Reservada · LBTC-2</div>
+          <div class="city-card-desc">
+            Segundo nodo de la red global. Diseñada para máxima resiliencia y privacidad, con infraestructura soberana y gobernanza descentralizada.
+          </div>
+          <a href="#unete" class="city-card-link">Conocer más →</a>
+        </div>
+      </div>
+    </div>
     <div class="hero-stats">
       <div>
-        <div class="hero-stat-label">Primera ciudad</div>
-        <div class="hero-stat-val">LBTC<span>-1</span></div>
-      </div>
-      <div>
-        <div class="hero-stat-label">Objetivo fundacional</div>
-        <div class="hero-stat-val">10<span>k hab.</span></div>
-      </div>
-      <div>
-        <div class="hero-stat-label">Fiscalidad local</div>
+        <div class="hero-stat-label">Fiscalidad</div>
         <div class="hero-stat-val">0<span>%</span></div>
       </div>
       <div>
         <div class="hero-stat-label">Economía</div>
         <div class="hero-stat-val">100<span>% ₿</span></div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── PROBLEMA ─── -->
-<section id="problema">
-  <div class="container">
-    <div class="section-eyebrow reveal" style="color:rgba(201,168,76,0.7)">El Sistema Agotado</div>
-    <h2 class="section-h2 light reveal reveal-d1">
-      El mismo problema.<br>
-      <em>En todos los países.</em>
-    </h2>
-    <p class="section-lead light reveal reveal-d2">
-      No es un problema español. No es un problema europeo. Es la consecuencia lógica
-      de sistemas centralizados que fallan a sus ciudadanos en todo el mundo.
-    </p>
-    <div class="problem-grid">
-      <div class="problem-items">
-        <div class="problem-item reveal reveal-d1">
-          <div class="problem-item-icon">⚖️</div>
-          <div>
-            <div class="problem-item-title">Presión Fiscal Confiscatoria</div>
-            <div class="problem-item-text">Tipos marginales que superan el 50% en decenas de países. El ciudadano productivo financia estructuras que no controla ni ha elegido.</div>
-          </div>
-        </div>
-        <div class="problem-item reveal reveal-d2">
-          <div class="problem-item-icon">🏦</div>
-          <div>
-            <div class="problem-item-title">Deuda e Inflación Monetaria</div>
-            <div class="problem-item-text">Los bancos centrales destruyen el ahorro de generaciones enteras mediante expansión monetaria. Un impuesto silencioso sin votación.</div>
-          </div>
-        </div>
-        <div class="problem-item reveal reveal-d3">
-          <div class="problem-item-icon">🏠</div>
-          <div>
-            <div class="problem-item-title">Acceso a la Vivienda Bloqueado</div>
-            <div class="problem-item-text">Regulación, burocracia y especulación institucional convierten la propiedad en un privilegio inalcanzable para las nuevas generaciones.</div>
-          </div>
-        </div>
-        <div class="problem-item reveal reveal-d4">
-          <div class="problem-item-icon">🔒</div>
-          <div>
-            <div class="problem-item-title">Pérdida de Soberanía Individual</div>
-            <div class="problem-item-text">Vigilancia, control de datos, regulación creciente. El individuo pierde progresivamente la capacidad de decidir sobre su propia vida.</div>
-          </div>
-        </div>
+      <div>
+        <div class="hero-stat-label">Gobernanza</div>
+        <div class="hero-stat-val" style="font-size:1.4rem">Miembros</div>
       </div>
-      <div class="problem-visual reveal reveal-d2">
-        <div class="problem-globe">
-          <div class="globe-line"></div>
-          <div class="globe-line"></div>
-          <div class="globe-line"></div>
-          <div class="globe-line"></div>
-          <div class="problem-dot"></div>
-          <div class="problem-dot"></div>
-          <div class="problem-dot"></div>
-          <div class="problem-dot"></div>
-          <div class="problem-dot"></div>
-        </div>
+      <div>
+        <div class="hero-stat-label">Diseño central</div>
+        <div class="hero-stat-val">Cero</div>
       </div>
     </div>
   </div>
@@ -1514,6 +1636,66 @@
   </div>
 </section>
 
+<!-- ─── PROBLEMA ─── -->
+<section id="problema">
+  <div class="container">
+    <div class="section-eyebrow reveal" style="color:rgba(201,168,76,0.7)">El Sistema Agotado</div>
+    <h2 class="section-h2 reveal reveal-d1">
+      El mismo problema.<br>
+      <em>En todos los países.</em>
+    </h2>
+    <p class="section-lead reveal reveal-d2">
+      No es un problema español. No es un problema europeo. Es la consecuencia lógica
+      de sistemas centralizados que fallan a sus ciudadanos en todo el mundo.
+    </p>
+    <div class="problem-grid">
+      <div class="problem-items">
+        <div class="problem-item reveal reveal-d1">
+          <div class="problem-item-icon">⚖️</div>
+          <div>
+            <div class="problem-item-title">Presión Fiscal Confiscatoria</div>
+            <div class="problem-item-text">Tipos marginales que superan el 50% en decenas de países. El ciudadano productivo financia estructuras que no controla ni ha elegido.</div>
+          </div>
+        </div>
+        <div class="problem-item reveal reveal-d2">
+          <div class="problem-item-icon">🏦</div>
+          <div>
+            <div class="problem-item-title">Deuda e Inflación Monetaria</div>
+            <div class="problem-item-text">Los bancos centrales destruyen el ahorro de generaciones enteras mediante expansión monetaria. Un impuesto silencioso sin votación.</div>
+          </div>
+        </div>
+        <div class="problem-item reveal reveal-d3">
+          <div class="problem-item-icon">🏠</div>
+          <div>
+            <div class="problem-item-title">Acceso a la Vivienda Bloqueado</div>
+            <div class="problem-item-text">Regulación, burocracia y especulación institucional convierten la propiedad en un privilegio inalcanzable para las nuevas generaciones.</div>
+          </div>
+        </div>
+        <div class="problem-item reveal reveal-d4">
+          <div class="problem-item-icon">🔒</div>
+          <div>
+            <div class="problem-item-title">Pérdida de Soberanía Individual</div>
+            <div class="problem-item-text">Vigilancia, control de datos, regulación creciente. El individuo pierde progresivamente la capacidad de decidir sobre su propia vida.</div>
+          </div>
+        </div>
+      </div>
+      <div class="problem-visual reveal reveal-d2">
+        <div class="problem-globe">
+          <div class="globe-line"></div>
+          <div class="globe-line"></div>
+          <div class="globe-line"></div>
+          <div class="globe-line"></div>
+          <div class="problem-dot"></div>
+          <div class="problem-dot"></div>
+          <div class="problem-dot"></div>
+          <div class="problem-dot"></div>
+          <div class="problem-dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ─── FOOTER ─── -->
 <footer>
   <div class="footer-inner">
@@ -1602,6 +1784,94 @@
     container.appendChild(svg);
   }
   window.addEventListener('load', drawConnections);
+</script>
+
+<script>
+/* =====================================
+   CITY PANEL TOGGLE
+   ===================================== */
+function toggleCities() {
+    const panel = document.getElementById('citiesPanel');
+    const btn = document.getElementById('btnDev');
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+}
+
+/* =====================================
+   CANVAS NETWORK ANIMATION – LIGHT BLUE
+   ===================================== */
+(function() {
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    const NODES = 60;
+    const CONN_DIST = 180;
+    let nodes = [], W, H;
+
+    function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+
+    function init() {
+        nodes = [];
+        for (let i = 0; i < NODES; i++) {
+            nodes.push({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: (Math.random() - 0.5) * 0.3,
+                r: Math.random() * 2 + 0.8
+            });
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // Conexiones – azul
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const dx = nodes[i].x - nodes[j].x;
+                const dy = nodes[i].y - nodes[j].y;
+                const d = Math.sqrt(dx * dx + dy * dy);
+                if (d < CONN_DIST) {
+                    const alpha = (1 - d / CONN_DIST) * 0.28;
+                    ctx.beginPath();
+                    ctx.moveTo(nodes[i].x, nodes[i].y);
+                    ctx.lineTo(nodes[j].x, nodes[j].y);
+                    ctx.strokeStyle = `rgba(30,100,200,${alpha})`;
+                    ctx.lineWidth = 0.7;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Puntos – azul más intenso
+        nodes.forEach(n => {
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(20,80,180,0.55)';
+            ctx.fill();
+        });
+    }
+
+    function update() {
+        nodes.forEach(n => {
+            n.x += n.vx;
+            n.y += n.vy;
+            if (n.x < 0 || n.x > W) n.vx *= -1;
+            if (n.y < 0 || n.y > H) n.vy *= -1;
+        });
+    }
+
+    function loop() { update(); draw(); requestAnimationFrame(loop); }
+
+    window.addEventListener('resize', () => { resize(); init(); });
+    resize();
+    init();
+    loop();
+})();
 </script>
 </body>
 </html>
