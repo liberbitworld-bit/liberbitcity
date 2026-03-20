@@ -1065,6 +1065,26 @@
     .world-nodes { width: 100%; }
   }
 </style>
+<meta name="description" content="LiberBit City es la primera red mundial de ciudades privadas soberanas basadas en propiedad privada, gobernanza voluntaria y economía Bitcoin. Únete como pionero.">
+<meta name="keywords" content="ciudad libre, network state, Bitcoin city, propiedad privada, gobernanza descentralizada, LiberBit, ciudad soberana, libertad">
+<meta name="author" content="LiberBit City">
+<link rel="canonical" href="https://liberbitcity.org/">
+
+<!-- Open Graph -->
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://liberbitcity.org/">
+<meta property="og:title"       content="LiberBit City — La primera red mundial de ciudades libres">
+<meta property="og:description" content="Ciudades privadas soberanas basadas en propiedad privada, gobernanza voluntaria y economía Bitcoin. Únete como pionero fundador.">
+<meta property="og:image"       content="https://liberbitcity.org/og-liberatlas.jpg">
+<meta property="og:locale"      content="es_ES">
+<meta property="og:site_name"   content="LiberBit City">
+
+<!-- Twitter Card -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="LiberBit City — La primera red mundial de ciudades libres">
+<meta name="twitter:description" content="Ciudades privadas soberanas. Gobernanza voluntaria. Economía Bitcoin.">
+<meta name="twitter:image"       content="https://liberbitcity.org/og-liberatlas.jpg">
+
 </head>
 <body>
 <canvas id="bg-canvas"></canvas>
@@ -1801,7 +1821,8 @@
 
   // Form submit
   // ─── GOOGLE SHEETS INTEGRATION ───
-  const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby7K2F0thSqoHlqHHtWg6qh8vS95RyAdXkD1jELhu3PZpPzlkb-PBIWPL4jlx6H03-XGw/exec';
+  const DB_PROXY      = 'https://liberbit-api.vercel.app/api/db';
+  const FORMSPREE_URL = 'https://formspree.io/f/XXXXXXXX'; // reemplazar con tu endpoint Formspree
 
   // ─── NOSTR BOT ───
   const BOT_NSEC = 'nsec1zgd66zk2c3d90u5wc54f7rtqc9k3n9fnzt77snqwhkxzgnzn204qrusp9w';
@@ -1851,7 +1872,7 @@
     }
   }
 
-  function handleSubmit(btn) {
+  async function handleSubmit(btn) {
     const nombre = document.getElementById('f-nombre').value.trim();
     const email  = document.getElementById('f-email').value.trim();
     const pais   = document.getElementById('f-pais').value;
@@ -1866,29 +1887,46 @@
     btn.textContent = 'Enviando...';
     btn.disabled = true;
 
-    const payload = { nombre, email, pais, perfil, tipo, fecha: new Date().toLocaleString('es-ES') };
+    const payload = {
+      nombre, email, pais, perfil, tipo,
+      origen: 'liberbitcity.org',
+      created_at: new Date().toISOString()
+    };
 
-    // 1. Google Sheets
-    fetch(SHEETS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    try {
+      await Promise.allSettled([
+        // 1. Supabase via proxy
+        fetch(DB_PROXY, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            table: 'liberatlas_registros',
+            operation: 'insert',
+            data: payload
+          })
+        }),
+        // 2. Formspree (notificación email)
+        fetch(FORMSPREE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+      ]);
+    } catch(err) {
+      console.warn('[LiberAtlas] Form error:', err);
+    }
 
-    // 2. Nostr community chat
+    // 3. Nostr community chat
     const msg = `🏙️ Nuevo registro en LiberBit City\n👤 ${nombre} · ${pais}\n🎯 ${tipo} · ${perfil}\n\n¡Bienvenido/a a la red! liberbitcity.org`;
     publishToNostr(msg);
 
-    // 3. UI feedback
-    setTimeout(() => {
-      btn.textContent = '✓ Registrado — te contactaremos pronto';
-      btn.style.background = '#2A3240';
-      btn.style.color = '#C9A84C';
-      document.getElementById('f-nombre').value = '';
-      document.getElementById('f-email').value = '';
-      document.getElementById('f-pais').value = '';
-    }, 800);
+    // 4. UI feedback
+    btn.textContent = '✓ Registrado — te contactaremos pronto';
+    btn.style.background = '#2A3240';
+    btn.style.color = '#C9A84C';
+    document.getElementById('f-nombre').value = '';
+    document.getElementById('f-email').value = '';
+    document.getElementById('f-pais').value = '';
   }
 
   // SVG connections for world nodes (decorative)
