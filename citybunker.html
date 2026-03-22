@@ -158,6 +158,16 @@
   .coord-item strong { display: block; color: var(--ink); font-size: 0.7rem; }
   .coord-item.classified strong { color: var(--steel); }
 
+  .btn-hero-web {
+    display: inline-block; margin-top: 2rem;
+    background: var(--gold); color: var(--ink);
+    padding: 0.9rem 2.2rem; border-radius: 4px;
+    font-weight: 600; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase;
+    text-decoration: none; transition: all 0.25s;
+    opacity: 0; animation: fadeUp 0.8s 0.85s forwards;
+  }
+  .btn-hero-web:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
+
   /* SECTIONS */
   section { position: relative; z-index: 1; padding: 5rem 3rem; }
   .container { max-width: 1100px; margin: 0 auto; }
@@ -283,6 +293,17 @@
     text-decoration: none; transition: all 0.25s; position: relative;
   }
   .btn-cta:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
+  .btn-cta-outline {
+    display: inline-block;
+    background: transparent; color: var(--gold);
+    border: 1.5px solid var(--gold);
+    padding: 0.85rem 2.2rem; border-radius: 4px;
+    font-weight: 600; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase;
+    text-decoration: none; transition: all 0.25s;
+    margin-top: 0.75rem;
+    position: relative;
+  }
+  .btn-cta-outline:hover { background: var(--gold); color: var(--ink); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
   .btn-back-link {
     display: inline-block; margin-top: 1rem;
     font-family: var(--ff-mono); font-size: 0.65rem; letter-spacing: 0.1em;
@@ -363,6 +384,7 @@
       <div class="coord-item"><strong>Fase I</strong>Estado actual</div>
       <div class="coord-item"><strong>100% ₿</strong>Economía</div>
     </div>
+    <a href="https://citybunker.org" class="btn-hero-web" target="_blank" rel="noopener">Ir a la web de CityBunker →</a>
   </div>
 </section>
 
@@ -507,6 +529,7 @@
       <h3>Reserva tu lugar en<br><em>CityBunker.</em></h3>
       <p>El acceso al segundo nodo de la red es por invitación y cupo limitado. Si quieres ser parte de los fundadores, el momento es ahora.</p>
       <a href="index.html#unete" class="btn-cta">Solicitar Acceso Fundador</a><br>
+      <a href="https://citybunker.org" class="btn-cta-outline" target="_blank" rel="noopener">Ir a la web de CityBunker →</a><br>
       <a href="index.html" class="btn-back-link">← Volver a LiberBit City</a>
     </div>
   </div>
